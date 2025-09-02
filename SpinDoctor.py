@@ -32,7 +32,7 @@ FLUID_2 = config['FLUID_2']
 #Number of washes per cycle
 num_washes = config['num_washes']
 #Wash Duration, Min
-wash_time = config['wash_time']
+#wash_time = config['wash_time'] - user requested custom wash time entry for the 3 washes
 #Stain Cycle Duration, Min
 stain_time = 90
 #Wash Volume, mL
@@ -109,7 +109,6 @@ input ("Place the samples in the wash tray and place the wash tray in the basket
 
 # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
 for i in range(num_washes):
-    
     #prime the syringe to draw water
     print ("Priming Wash Liquid")
     pump.move_valve_to_position(FLUID_1)
@@ -117,7 +116,6 @@ for i in range(num_washes):
     sleep(0.5)
     pump.dispense(1500)
     sleep(0.5)
-    
     #Draw water and fill the tank
     print("Filliing the Chamber...")
     num_fills = int((wash_vol)/5)
@@ -126,7 +124,6 @@ for i in range(num_washes):
         pump.move_valve_to_position(CHAMBER)
         pump.dispense(5000)
         pump.move_valve_to_position(FLUID_1)
-
     #Purge the lines again with air to make sure all liquid is in the chamber 
     print ("Purging fill line to finish fill...")
     pump.move_valve_to_position(AIR)
@@ -134,10 +131,9 @@ for i in range(num_washes):
     pump.move_valve_to_position(CHAMBER)
     pump.reset_syringe_position()
     sleep(0.5)
-
-    #Start the wash - prompt the user to continue
-    #input ("Chamber has been filled. Press ENTER to begin wash (time: {} minutes)" .format(wash_time))
-
+    
+    #Start the wash - prompt the user to continue using default wash time or to override with their own
+    wash_time = input ("Chamber has been filled. Please enter the desired wash time in minutes")
     #Wash cycle
     ticcmd('--energize')
     ticcmd('--exit-safe-start')                                                    
@@ -180,4 +176,5 @@ for i in range(num_washes):
     logging.info("Drain Complete!",extra={'weblog':True})
 
 #end of script - print a message saying goodbye
+
 logging.info("Washes complete. Exiting program...", extra={'weblog':True})
