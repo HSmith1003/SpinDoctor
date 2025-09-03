@@ -96,7 +96,8 @@ except Exception as e:
 def kill_script():
     print("Script Terminated by user - exiting...")
     ticcmd('--deenergize')
-    sys.exit()
+    print('motor de energized')
+    exit()
 
 keyboard.add_hotkey('k', kill_script)
 
@@ -190,6 +191,7 @@ while True:
     #end of script - print a message saying goodbye
     
     logging.info("Washes complete. Exiting program...", extra={'weblog':True})
+
 
 
 
