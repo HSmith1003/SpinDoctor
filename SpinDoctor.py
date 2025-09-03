@@ -5,6 +5,7 @@
 import logging
 from mpetk.mpeconfig import source_configuration #importing stuff to post messages to the log server
 import pprint
+import sys
 import keyboard
 from time import sleep
 import subprocess #used to run the wash stepper motor via the tic command interface
@@ -189,5 +190,6 @@ while True:
     #end of script - print a message saying goodbye
     
     logging.info("Washes complete. Exiting program...", extra={'weblog':True})
+
 
 
