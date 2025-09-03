@@ -116,7 +116,7 @@ for i in range(2):
         
 input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle. Press K to kill the script at any time.")
 
-while true:
+while True:
     
     # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
     for i in range(num_washes):
@@ -189,4 +189,5 @@ while true:
     #end of script - print a message saying goodbye
     
     logging.info("Washes complete. Exiting program...", extra={'weblog':True})
+
 
