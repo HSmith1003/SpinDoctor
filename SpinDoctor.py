@@ -5,6 +5,7 @@
 import logging
 from mpetk.mpeconfig import source_configuration #importing stuff to post messages to the log server
 import pprint
+import keyboard
 from time import sleep
 import subprocess #used to run the wash stepper motor via the tic command interface
 import yaml #used to read in information about the tic motor control board and check status
@@ -20,7 +21,7 @@ except Exception as e:
     logging.info("Config Error: {}".format(e), extra={"weblog":True})
     exit()
 
-#COM ports
+#Setup COM ports
 S_COM_PORT = config['S_COM_PORT']
 #Stream selector ports 
 CHAMBER = config['CHAMBER']
@@ -90,6 +91,14 @@ except Exception as e:
     logging.error("Could not connect to the Stepper Motor Controller - {}".format(e), extra ={"weblog":True})
     exit()
 
+#Establish an abort key for a clean stop of the program if necessary
+def kill_script():
+    print("Script Terminated by user - exiting...")
+    ticcmd('--deenergize')
+    sys.exit()
+
+keyboard.add_hotkey('k', kill_script)
+
 #Purge the lines initially
 print("Purging fill line with air...")
 pump.move_valve_to_position(AIR)
@@ -105,76 +114,79 @@ for i in range(2):
         pump.move_valve_to_position(WASTE)
         pump.dispense(5000)
         
-input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle...")
+input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle. Press K to kill the script at any time.")
 
-# ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
-for i in range(num_washes):
-    #prime the syringe to draw water
-    print ("Priming Wash Liquid")
-    pump.move_valve_to_position(FLUID_1)
-    pump.withdraw(1500)
-    sleep(0.5)
-    pump.dispense(1500)
-    sleep(0.5)
-    #Draw water and fill the tank
-    print("Filliing the Chamber...")
-    num_fills = int((wash_vol)/5)
-    for j in range(num_fills):
-        pump.withdraw(5000)
-        pump.move_valve_to_position(CHAMBER)
-        pump.dispense(5000)
+while true:
+    
+    # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
+    for i in range(num_washes):
+        #prime the syringe to draw water
+        print ("Priming Wash Liquid")
         pump.move_valve_to_position(FLUID_1)
-    #Purge the lines again with air to make sure all liquid is in the chamber 
-    print ("Purging fill line to finish fill...")
-    pump.move_valve_to_position(AIR)
-    pump.withdraw(4500)
-    pump.move_valve_to_position(CHAMBER)
-    pump.reset_syringe_position()
-    sleep(0.5)
+        pump.withdraw(1500)
+        sleep(0.5)
+        pump.dispense(1500)
+        sleep(0.5)
+        #Draw water and fill the tank
+        print("Filliing the Chamber...")
+        num_fills = int((wash_vol)/5)
+        for j in range(num_fills):
+            pump.withdraw(5000)
+            pump.move_valve_to_position(CHAMBER)
+            pump.dispense(5000)
+            pump.move_valve_to_position(FLUID_1)
+        #Purge the lines again with air to make sure all liquid is in the chamber 
+        print ("Purging fill line to finish fill...")
+        pump.move_valve_to_position(AIR)
+        pump.withdraw(4500)
+        pump.move_valve_to_position(CHAMBER)
+        pump.reset_syringe_position()
+        sleep(0.5)
+        
+        #Start the wash - prompt the user to continue using default wash time or to override with their own
+        wash_time = input ("Chamber has been filled. Please enter the desired wash time in minutes")
+        #Wash cycle
+        ticcmd('--energize')
+        ticcmd('--exit-safe-start')                                                    
+        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
+        ticcmd('--velocity', str(wash_vel) )
+        logging.info("Starting Wash {}/{}, time = {} minutes" .format( i+1, num_washes, wash_time), extra={'weblog':True})
+        #Run the wash for the alloted time and then stop the motor
+        wash_seconds = int(wash_time * 60)
+        for k in range(wash_seconds):
+            print("Washing |", end="\r", flush=True)
+            sleep(0.167)
+            print("Washing /",end="\r", flush=True)
+            sleep(0.167)
+            print("Washing \\",end="\r", flush=True)
+            sleep(0.167)
+            print("Washing |",end="\r", flush=True)
+            sleep(0.167)
+            print("Washing /",end="\r", flush=True)
+            sleep(0.167)
+            print("Washing \\",end="\r", flush=True)
+            sleep(0.167)
+        ticcmd('--velocity', str(0) )
+        #ledpin.write(0) #turn off the 'wash active' LED
+        logging.info("Wash {}/{} Complete!" .format(i+1,num_washes), extra={'weblog':True})
+        ticcmd('--deenergize')
+        
+        if i == (num_washes-1): 
+            #Prompt the user to remove the wash tray 
+            input ("Final Wash Complete. Remove sample tray and press ENTER to drain the chamber...")
     
-    #Start the wash - prompt the user to continue using default wash time or to override with their own
-    wash_time = input ("Chamber has been filled. Please enter the desired wash time in minutes")
-    #Wash cycle
-    ticcmd('--energize')
-    ticcmd('--exit-safe-start')                                                    
-    wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
-    ticcmd('--velocity', str(wash_vel) )
-    logging.info("Starting Wash {}/{}, time = {} minutes" .format( i+1, num_washes, wash_time), extra={'weblog':True})
-    #Run the wash for the alloted time and then stop the motor
-    wash_seconds = int(wash_time * 60)
-    for k in range(wash_seconds):
-        print("Washing |", end="\r", flush=True)
-        sleep(0.167)
-        print("Washing /",end="\r", flush=True)
-        sleep(0.167)
-        print("Washing \\",end="\r", flush=True)
-        sleep(0.167)
-        print("Washing |",end="\r", flush=True)
-        sleep(0.167)
-        print("Washing /",end="\r", flush=True)
-        sleep(0.167)
-        print("Washing \\",end="\r", flush=True)
-        sleep(0.167)
-    ticcmd('--velocity', str(0) )
-    #ledpin.write(0) #turn off the 'wash active' LED
-    logging.info("Wash {}/{} Complete!" .format(i+1,num_washes), extra={'weblog':True})
-    ticcmd('--deenergize')
+        # ~~~~~~~~ DRAIN ~~~~~~~~
+        logging.info("Draining the Chamber...",extra={'weblog':True})
+        num_drains = int(num_fills + 2)
+        sleep(1)
+        for m in range(num_drains):
+            pump.move_valve_to_position(DRAIN)
+            pump.withdraw(5000)
+            pump.move_valve_to_position(WASTE)
+            pump.dispense(5000)
+        logging.info("Drain Complete!",extra={'weblog':True})
     
-    if i == (num_washes-1): 
-        #Prompt the user to remove the wash tray 
-        input ("Final Wash Complete. Remove sample tray and press ENTER to drain the chamber...")
+    #end of script - print a message saying goodbye
+    
+    logging.info("Washes complete. Exiting program...", extra={'weblog':True})
 
-    # ~~~~~~~~ DRAIN ~~~~~~~~
-    logging.info("Draining the Chamber...",extra={'weblog':True})
-    num_drains = int(num_fills + 2)
-    sleep(1)
-    for m in range(num_drains):
-        pump.move_valve_to_position(DRAIN)
-        pump.withdraw(5000)
-        pump.move_valve_to_position(WASTE)
-        pump.dispense(5000)
-    logging.info("Drain Complete!",extra={'weblog':True})
-
-#end of script - print a message saying goodbye
-
-logging.info("Washes complete. Exiting program...", extra={'weblog':True})
