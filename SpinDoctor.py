@@ -188,11 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
-    for n in range(4):
-            pump.move_valve_to_position(DRAIN)
-            pump.withdraw(5000)
-            pump.move_valve_to_position(WASTE)
-            pump.dispense(5000)
+
 
 
 
