@@ -179,8 +179,8 @@ for i in range(num_washes):
     logging.info("Drain Complete!",extra={'weblog':True})
 
 #end of script - print a message saying goodbye
-
 logging.info("Washes complete. Exiting program...", extra={'weblog':True})
+
 
 
 
