@@ -92,15 +92,6 @@ except Exception as e:
     logging.error("Could not connect to the Stepper Motor Controller - {}".format(e), extra ={"weblog":True})
     exit()
 
-#Establish an abort key for a clean stop of the program if necessary
-def kill_script():
-    print("Script Terminated by user - exiting...")
-    ticcmd('--deenergize')
-    print('motor de energized')
-    exit()
-
-keyboard.add_hotkey('k', kill_script)
-
 #Purge the lines initially
 print("Purging fill line with air...")
 pump.move_valve_to_position(AIR)
@@ -190,6 +181,7 @@ for i in range(num_washes):
 #end of script - print a message saying goodbye
 
 logging.info("Washes complete. Exiting program...", extra={'weblog':True})
+
 
 
 
