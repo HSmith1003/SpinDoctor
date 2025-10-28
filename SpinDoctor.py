@@ -147,7 +147,8 @@ try:
         ticcmd('--velocity', str(wash_vel) )
         logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
         #Run the wash for the alloted time and then stop the motor
-        wash_seconds = int(wash_time * 60)
+        mins = int(wash_time)
+        wash_seconds = mins * 60
         print ("wash duration: {} seconds" .format(wash_seconds))
         for k in range(wash_seconds):
             print("Washing |", end="\r", flush=True)
@@ -188,6 +189,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
