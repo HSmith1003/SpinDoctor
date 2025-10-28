@@ -163,10 +163,7 @@ try:
             sleep(0.167)
             print("Washing \\",end="\r", flush=True)
             sleep(0.167)
-        ticcmd('--velocity', str(0) )
-        #ledpin.write(0) #turn off the 'wash active' LED
         logging.info("Wash {}/{} Complete!" .format(i+1,num_washes), extra={'weblog':True})
-        ticcmd('--deenergize')
         
         if i == (num_washes-1): 
             #Prompt the user to remove the wash tray 
@@ -182,6 +179,8 @@ try:
             pump.move_valve_to_position(WASTE)
             pump.dispense(5000)
         logging.info("Drain Complete!",extra={'weblog':True})
+        ticcmd('--velocity', str(0) )
+         ticcmd('--deenergize')
     
     #end of script - print a message saying goodbye
     logging.info("Washes complete. Exiting program...", extra={'weblog':True})
@@ -189,6 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
