@@ -36,9 +36,10 @@ num_washes = config['num_washes']
 #Wash Duration, Min
 #wash_time = config['wash_time'] - user requested custom wash time entry for the 3 washes
 #Stain Cycle Duration, Min
-stain_time = 90
+#stain_time = 90
 #Wash Volume, mL
 wash_vol = config['wash_vol']
+num_fills = int((wash_vol)/5)
 
 #Initial Startup Message to User
 print("Starting SpinDoctor. Press CTRL+C to exit at any time")
@@ -105,7 +106,7 @@ try:
     
     #Drain the chamber initially
     print ("Draining any residuals in the Chamber")
-    for i in range(2):
+    for i in range(num_fills):
             pump.move_valve_to_position(DRAIN)
             pump.withdraw(5000)
             pump.move_valve_to_position(WASTE)
@@ -126,7 +127,6 @@ try:
         sleep(0.5)
         #Draw water and fill the tank
         print("Filliing the Chamber...")
-        num_fills = int((wash_vol)/5)
         for j in range(num_fills):
             pump.withdraw(5000)
             pump.move_valve_to_position(CHAMBER)
@@ -187,6 +187,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
