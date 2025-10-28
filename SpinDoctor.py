@@ -43,6 +43,7 @@ num_fills = int((wash_vol)/5)
 
 #Initial Startup Message to User
 print("Starting SpinDoctor. Press CTRL+C to exit at any time")
+int wash_time = input ("Please enter the desired duration of all washes in minutes ")
 
 try:
     #Connect to the syringe pump
@@ -112,9 +113,8 @@ try:
             pump.move_valve_to_position(WASTE)
             pump.dispense(5000)
 
-    #Prompt the user to begin the cycle
-    wash_time = input ("Please enter the desired duration of all washes in minutes")
-    input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle. Press CTRL+C to kill the script at any time.")
+    #Give cycle info and prompt the user to begin the cycle
+    input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle")
         
     # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
     for i in range(num_washes):
@@ -145,9 +145,10 @@ try:
         ticcmd('--exit-safe-start')                                                    
         wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
         ticcmd('--velocity', str(wash_vel) )
-        logging.info("Starting Wash {}/{}, time = {} minutes" .format( i+1, num_washes, wash_time), extra={'weblog':True})
+        logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
         #Run the wash for the alloted time and then stop the motor
         wash_seconds = int(wash_time * 60)
+        print wash_seconds
         for k in range(wash_seconds):
             print("Washing |", end="\r", flush=True)
             sleep(0.167)
@@ -187,6 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
