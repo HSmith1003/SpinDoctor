@@ -148,7 +148,7 @@ try:
         logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
         #Run the wash for the alloted time and then stop the motor
         wash_seconds = int(wash_time * 60)
-        print wash_seconds
+        print (wash_seconds)
         for k in range(wash_seconds):
             print("Washing |", end="\r", flush=True)
             sleep(0.167)
@@ -188,6 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
