@@ -167,6 +167,8 @@ try:
         
         if i == (num_washes-1): 
             #Prompt the user to remove the wash tray 
+            ticcmd('--velocity', str(0) )
+            ticcmd('--deenergize')
             input ("Final Wash Complete. Remove sample tray and press ENTER to drain the chamber...")
     
         # ~~~~~~~~ DRAIN ~~~~~~~~
@@ -188,6 +190,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
