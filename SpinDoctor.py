@@ -171,7 +171,7 @@ try:
     
         # ~~~~~~~~ DRAIN ~~~~~~~~
         logging.info("Draining the Chamber...",extra={'weblog':True})
-        num_drains = int(num_fills + 2)
+        num_drains = int(num_fills + 3)
         sleep(1)
         for m in range(num_drains):
             pump.move_valve_to_position(DRAIN)
@@ -188,6 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
