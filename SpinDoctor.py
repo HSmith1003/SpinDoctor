@@ -43,7 +43,7 @@ num_fills = int((wash_vol)/5)
 
 #Initial Startup Message to User
 print("Starting SpinDoctor. Press CTRL+C to exit at any time")
-int wash_time = input ("Please enter the desired duration of all washes in minutes ")
+wash_time = input ("Please enter the desired duration of all washes in minutes ")
 
 try:
     #Connect to the syringe pump
@@ -188,6 +188,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
