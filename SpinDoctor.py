@@ -107,12 +107,13 @@ try:
     print ("Draining any residuals in the Chamber")
     for i in range(2):
             pump.move_valve_to_position(DRAIN)
-            pump.withdraw(5000)#Prompt the user to set up for washing and press enter to continue
+            pump.withdraw(5000)
             pump.move_valve_to_position(WASTE)
             pump.dispense(5000)
-            
-    input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle. Press K to kill the script at any time.")
-    
+
+    #Prompt the user to begin the cycle
+    wash_time = input ("Please enter the desired duration of all washes in minutes")
+    input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle. Press CTRL+C to kill the script at any time.")
         
     # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
     for i in range(num_washes):
@@ -139,8 +140,6 @@ try:
         pump.reset_syringe_position()
         sleep(0.5)
         
-        #Start the wash - prompt the user to continue using default wash time or to override with their own
-        wash_time = input ("Chamber has been filled. Please enter the desired wash time in minutes")
         #Wash cycle
         ticcmd('--energize')
         ticcmd('--exit-safe-start')                                                    
@@ -188,6 +187,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
