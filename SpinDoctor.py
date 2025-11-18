@@ -39,7 +39,7 @@ num_washes = config['num_washes']
 #stain_time = 90
 #Wash Volume, mL
 wash_vol = config['wash_vol']
-num_fills = int((wash_vol)/5)
+num_fills = int((wash_vol)/4)
 
 #Initial Startup Message to User
 print("Starting SpinDoctor. Press CTRL+C to exit at any time")
@@ -190,6 +190,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
