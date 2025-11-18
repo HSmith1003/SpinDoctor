@@ -101,7 +101,7 @@ try:
     #Purge the lines initially
     print("Purging fill line with air...")
     pump.move_valve_to_position(AIR)
-    pump.withdraw(5000)
+    pump.withdraw(4800)
     pump.move_valve_to_position(CHAMBER)
     pump.reset_syringe_position()
     
@@ -109,9 +109,9 @@ try:
     print ("Draining any residuals in the Chamber")
     for i in range(num_fills):
             pump.move_valve_to_position(DRAIN)
-            pump.withdraw(5000)
+            pump.withdraw(4800)
             pump.move_valve_to_position(WASTE)
-            pump.dispense(5000)
+            pump.dispense(4800)
 
     #Give cycle info and prompt the user to begin the cycle
     input ("Place the samples in the wash tray and place the wash tray in the basket. Press ENTER to initiate WASH Cycle")
@@ -121,16 +121,16 @@ try:
         #prime the syringe to draw water
         print ("Priming Wash Liquid")
         pump.move_valve_to_position(FLUID_1)
-        pump.withdraw(1500)
+        pump.withdraw(2500)
         sleep(0.5)
-        pump.dispense(1500)
+        pump.dispense(2500)
         sleep(0.5)
         #Draw water and fill the tank
         print("Filliing the Chamber...")
         for j in range(num_fills):
-            pump.withdraw(5000)
+            pump.withdraw(4000)
             pump.move_valve_to_position(CHAMBER)
-            pump.dispense(5000)
+            pump.dispense(4000)
             pump.move_valve_to_position(FLUID_1)
         #Purge the lines again with air to make sure all liquid is in the chamber 
         print ("Purging fill line to finish fill...")
@@ -177,9 +177,9 @@ try:
         sleep(1)
         for m in range(num_drains):
             pump.move_valve_to_position(DRAIN)
-            pump.withdraw(5000)
+            pump.withdraw(4000)
             pump.move_valve_to_position(WASTE)
-            pump.dispense(5000)
+            pump.dispense(4000)
         logging.info("Drain Complete!",extra={'weblog':True})
         ticcmd('--velocity', str(0) )
         ticcmd('--deenergize')
@@ -190,6 +190,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
