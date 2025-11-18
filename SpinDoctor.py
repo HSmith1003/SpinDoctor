@@ -126,6 +126,10 @@ try:
         pump.dispense(2500)
         sleep(0.5)
         #Draw water and fill the tank
+        ticcmd('--energize')
+        ticcmd('--exit-safe-start')                                                    
+        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
+        ticcmd('--velocity', str(wash_vel) )
         print("Filliing the Chamber...")
         for j in range(num_fills):
             pump.withdraw(4000)
@@ -141,10 +145,6 @@ try:
         sleep(0.5)
         
         #Wash cycle
-        ticcmd('--energize')
-        ticcmd('--exit-safe-start')                                                    
-        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
-        ticcmd('--velocity', str(wash_vel) )
         logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
         #Run the wash for the alloted time and then stop the motor
         mins = int(wash_time)
@@ -190,6 +190,7 @@ try:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
