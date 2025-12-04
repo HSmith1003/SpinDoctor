@@ -107,6 +107,7 @@ try:
         exit()
         
 while true:
+    
     cycle_type = input ("Welcome to SpinDoctor - Please enter 'W' for Wash Cycle, 'C' For Self Clean, or 'T' for test mode (SIPE only!)")
 
     #~~~~~~~~~~~CLEAN CYCLE~~~~~~~~~~~~
@@ -284,6 +285,7 @@ while true:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
