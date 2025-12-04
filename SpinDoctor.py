@@ -106,138 +106,54 @@ try:
         logging.error("Could not connect to the Stepper Motor Controller - {}".format(e), extra ={"weblog":True})
         exit()
         
-while true:
+try:
+    while true:
+        
+        cycle_type = input ("Welcome to SpinDoctor - Please enter 'W' for Wash Cycle, 'C' For Self Clean, or 'T' for test mode (SIPE only!)")
     
-    cycle_type = input ("Welcome to SpinDoctor - Please enter 'W' for Wash Cycle, 'C' For Self Clean, or 'T' for test mode (SIPE only!)")
-
-    #~~~~~~~~~~~CLEAN CYCLE~~~~~~~~~~~~
-    if cycle_type in ('c','C'):
-
-        #Give cycle info and prompt the user to begin the cycle
-        print("Number of Washes in this cycle = 1")
-        print("Wash Time = {} minutes" .format(clean_time))
-        print("Wash Volume = {} mL" .format(clean_vol))
-        input ("Remove any samples and place the wash tray in the chamber . Press ENTER to initiate CLEAN Cycle")
-
-        #Purge the lines initially
-        print("Purging fill line with air...")
-        pump.move_valve_to_position(AIR)
-        pump.withdraw(fill_stroke)
-        pump.move_valve_to_position(CHAMBER)
-        pump.reset_syringe_position()
-        
-        #Drain the chamber initially
-        print ("Draining any residuals in the Chamber")
-        ticcmd('--energize')
-        ticcmd('--exit-safe-start')                                                    
-        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
-        ticcmd('--velocity', str(wash_vel) )
-        
-        for i in range(clean_num_fills):
-                pump.move_valve_to_position(DRAIN)
-                pump.withdraw(fill_stroke)
-                pump.move_valve_to_position(WASTE)
-                pump.dispense(fill_stroke)
-            
-        #prime the syringe to draw water
-        print ("Priming Cleaning Liquid")
-        pump.move_valve_to_position(FLUID_2)
-        pump.withdraw(prime_stroke)
-        sleep(0.5)
-        pump.dispense(prime_stroke)
-        sleep(0.5)
-        #Draw water and fill the tank
-        print("Filliing the Chamber...")
-        for j in range(clean_num_fills):
+        #~~~~~~~~~~~CLEAN CYCLE~~~~~~~~~~~~
+        if cycle_type in ('c','C'):
+    
+            #Give cycle info and prompt the user to begin the cycle
+            print("Number of Washes in this cycle = 1")
+            print("Wash Time = {} minutes" .format(clean_time))
+            print("Wash Volume = {} mL" .format(clean_vol))
+            input ("Remove any samples and place the wash tray in the chamber . Press ENTER to initiate CLEAN Cycle")
+    
+            #Purge the lines initially
+            print("Purging fill line with air...")
+            pump.move_valve_to_position(AIR)
             pump.withdraw(fill_stroke)
             pump.move_valve_to_position(CHAMBER)
-            pump.dispense(fill_stroke)
-            pump.move_valve_to_position(FLUID_2)
-        #Purge the lines again with air to make sure all liquid is in the chamber 
-        print ("Purging fill line to finish fill...")
-        pump.move_valve_to_position(AIR)
-        pump.withdraw(fill_stroke)
-        pump.move_valve_to_position(CHAMBER)
-        pump.reset_syringe_position()
-        sleep(0.5)
-
-        #Clean Cycle
-        ticcmd('--velocity', str(0) )
-        ticcmd('--deenergize')
-        logging.info("Starting Clean Soak, time = {} minute(s)" .format(clean_time), extra={'weblog':True})
-        #Run the wash for the alloted time and then stop the motor
-        clean_seconds = clean_time * 60
-        sleep(clean_seconds)
-        logging.info("Clean Soak Complete!", extra={'weblog':True})
-
-        # ~~~~~~~~ DRAIN ~~~~~~~~
-        ticcmd('--energize')
-        ticcmd('--exit-safe-start')                                                    
-        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
-        ticcmd('--velocity', str(wash_vel) )
-        logging.info("Draining the Chamber...",extra={'weblog':True})
-        num_drains = int(clean_num_fills + 3)
-        sleep(1)
-        for m in range(num_drains):
-            pump.move_valve_to_position(DRAIN)
-            pump.withdraw(fill_stroke)
-            pump.move_valve_to_position(WASTE)
-            pump.dispense(fill_stroke)
-        logging.info("Drain Complete!",extra={'weblog':True})
-        ticcmd('--velocity', str(0) )
-        ticcmd('--deenergize')
-        
-        #end of cycle
-        logging.info("Clean cycle complete. Returning to Main Menu", extra={'weblog':True})
-
-    # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
-    elif cycle_type in ( 'w ','W'):
-
-        num_washes = int(input("Please enter the number of washes to be performed during this cycle"))
-        wash_time = float(input ("Please enter the desired duration of all washes in minutes "))   
-    
-        #Give cycle info and prompt the user to begin the cycle
-        print("Number of Washes in this cycle = {}" .format(num_washes))
-        print("Wash Time = {} minutes per wash" .format(wash_time))
-        print("Wash Volume = {} mL" .format(wash_vol))
-        print("Cycles to fill: {}" .format(num_fills))
-        input ("Place the samples in the wash tray and place the wash tray in the chamber. Press ENTER to initiate WASH Cycle")
-
-        #Purge the lines initially
-        print("Purging fill line with air...")
-        pump.move_valve_to_position(AIR)
-        pump.withdraw(fill_stroke)
-        pump.move_valve_to_position(CHAMBER)
-        pump.reset_syringe_position()
-        
-        #Drain the chamber initially
-        print ("Draining any residuals in the Chamber")
-        ticcmd('--energize')
-        ticcmd('--exit-safe-start')                                                    
-        wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
-        ticcmd('--velocity', str(wash_vel) )
-        
-        for i in range(num_fills):
-                pump.move_valve_to_position(DRAIN)
-                pump.withdraw(fill_stroke)
-                pump.move_valve_to_position(WASTE)
-                pump.dispense(fill_stroke)
-    
-        for i in range(num_washes):
+            pump.reset_syringe_position()
+            
+            #Drain the chamber initially
+            print ("Draining any residuals in the Chamber")
+            ticcmd('--energize')
+            ticcmd('--exit-safe-start')                                                    
+            wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
+            ticcmd('--velocity', str(wash_vel) )
+            
+            for i in range(clean_num_fills):
+                    pump.move_valve_to_position(DRAIN)
+                    pump.withdraw(fill_stroke)
+                    pump.move_valve_to_position(WASTE)
+                    pump.dispense(fill_stroke)
+                
             #prime the syringe to draw water
-            print ("Priming Wash Liquid")
-            pump.move_valve_to_position(FLUID_1)
+            print ("Priming Cleaning Liquid")
+            pump.move_valve_to_position(FLUID_2)
             pump.withdraw(prime_stroke)
             sleep(0.5)
             pump.dispense(prime_stroke)
             sleep(0.5)
             #Draw water and fill the tank
             print("Filliing the Chamber...")
-            for j in range(num_fills):
+            for j in range(clean_num_fills):
                 pump.withdraw(fill_stroke)
                 pump.move_valve_to_position(CHAMBER)
                 pump.dispense(fill_stroke)
-                pump.move_valve_to_position(FLUID_1)
+                pump.move_valve_to_position(FLUID_2)
             #Purge the lines again with air to make sure all liquid is in the chamber 
             print ("Purging fill line to finish fill...")
             pump.move_valve_to_position(AIR)
@@ -245,23 +161,23 @@ while true:
             pump.move_valve_to_position(CHAMBER)
             pump.reset_syringe_position()
             sleep(0.5)
-            
-            #Wash cycle
-            logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
+    
+            #Clean Cycle
+            ticcmd('--velocity', str(0) )
+            ticcmd('--deenergize')
+            logging.info("Starting Clean Soak, time = {} minute(s)" .format(clean_time), extra={'weblog':True})
             #Run the wash for the alloted time and then stop the motor
-            wash_seconds = wash_time * 60
-            sleep(wash_seconds)
-            logging.info("Wash {}/{} Complete!" .format(i+1,num_washes), extra={'weblog':True})
-            
-            if i == (num_washes-1): 
-                #Prompt the user to remove the wash tray 
-                ticcmd('--velocity', str(0) )
-                ticcmd('--deenergize')
-                input ("Final Wash Complete. Remove sample tray and press ENTER to drain the chamber...")
-        
+            clean_seconds = clean_time * 60
+            sleep(clean_seconds)
+            logging.info("Clean Soak Complete!", extra={'weblog':True})
+    
             # ~~~~~~~~ DRAIN ~~~~~~~~
+            ticcmd('--energize')
+            ticcmd('--exit-safe-start')                                                    
+            wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
+            ticcmd('--velocity', str(wash_vel) )
             logging.info("Draining the Chamber...",extra={'weblog':True})
-            num_drains = int(num_fills + 3)
+            num_drains = int(clean_num_fills + 3)
             sleep(1)
             for m in range(num_drains):
                 pump.move_valve_to_position(DRAIN)
@@ -271,19 +187,106 @@ while true:
             logging.info("Drain Complete!",extra={'weblog':True})
             ticcmd('--velocity', str(0) )
             ticcmd('--deenergize')
+            
+            #end of cycle
+            logging.info("Clean cycle complete. Returning to Main Menu", extra={'weblog':True})
+    
+        # ~~~~~~~~~~ WASH CYCLE ~~~~~~~~~~
+        elif cycle_type in ( 'w ','W'):
+    
+            num_washes = int(input("Please enter the number of washes to be performed during this cycle"))
+            wash_time = float(input ("Please enter the desired duration of all washes in minutes "))   
         
-        #end of cycle
-        logging.info("Washes complete. Returning to Main Menu", extra={'weblog':True})
-
-    #~~~~~~~~~~TEST MODE~~~~~~~~~~~~~~~
-    elif cycle_type in ('t','T'):    
-        print("nothing here yet!")
+            #Give cycle info and prompt the user to begin the cycle
+            print("Number of Washes in this cycle = {}" .format(num_washes))
+            print("Wash Time = {} minutes per wash" .format(wash_time))
+            print("Wash Volume = {} mL" .format(wash_vol))
+            print("Cycles to fill: {}" .format(num_fills))
+            input ("Place the samples in the wash tray and place the wash tray in the chamber. Press ENTER to initiate WASH Cycle")
+    
+            #Purge the lines initially
+            print("Purging fill line with air...")
+            pump.move_valve_to_position(AIR)
+            pump.withdraw(fill_stroke)
+            pump.move_valve_to_position(CHAMBER)
+            pump.reset_syringe_position()
+            
+            #Drain the chamber initially
+            print ("Draining any residuals in the Chamber")
+            ticcmd('--energize')
+            ticcmd('--exit-safe-start')                                                    
+            wash_vel = 300000  #speed at which the motor spins durng the wash process (microsteps per 1000s)
+            ticcmd('--velocity', str(wash_vel) )
+            
+            for i in range(num_fills):
+                    pump.move_valve_to_position(DRAIN)
+                    pump.withdraw(fill_stroke)
+                    pump.move_valve_to_position(WASTE)
+                    pump.dispense(fill_stroke)
         
-    else 
-        print("Invalid input, please enter a valid option")
+            for i in range(num_washes):
+                #prime the syringe to draw water
+                print ("Priming Wash Liquid")
+                pump.move_valve_to_position(FLUID_1)
+                pump.withdraw(prime_stroke)
+                sleep(0.5)
+                pump.dispense(prime_stroke)
+                sleep(0.5)
+                #Draw water and fill the tank
+                print("Filliing the Chamber...")
+                for j in range(num_fills):
+                    pump.withdraw(fill_stroke)
+                    pump.move_valve_to_position(CHAMBER)
+                    pump.dispense(fill_stroke)
+                    pump.move_valve_to_position(FLUID_1)
+                #Purge the lines again with air to make sure all liquid is in the chamber 
+                print ("Purging fill line to finish fill...")
+                pump.move_valve_to_position(AIR)
+                pump.withdraw(fill_stroke)
+                pump.move_valve_to_position(CHAMBER)
+                pump.reset_syringe_position()
+                sleep(0.5)
+                
+                #Wash cycle
+                logging.info("Starting Wash {}/{}, time = {} minute(s)" .format( i+1, num_washes, wash_time), extra={'weblog':True})
+                #Run the wash for the alloted time and then stop the motor
+                wash_seconds = wash_time * 60
+                sleep(wash_seconds)
+                logging.info("Wash {}/{} Complete!" .format(i+1,num_washes), extra={'weblog':True})
+                
+                if i == (num_washes-1): 
+                    #Prompt the user to remove the wash tray 
+                    ticcmd('--velocity', str(0) )
+                    ticcmd('--deenergize')
+                    input ("Final Wash Complete. Remove sample tray and press ENTER to drain the chamber...")
+            
+                # ~~~~~~~~ DRAIN ~~~~~~~~
+                logging.info("Draining the Chamber...",extra={'weblog':True})
+                num_drains = int(num_fills + 3)
+                sleep(1)
+                for m in range(num_drains):
+                    pump.move_valve_to_position(DRAIN)
+                    pump.withdraw(fill_stroke)
+                    pump.move_valve_to_position(WASTE)
+                    pump.dispense(fill_stroke)
+                logging.info("Drain Complete!",extra={'weblog':True})
+                ticcmd('--velocity', str(0) )
+                ticcmd('--deenergize')
+            
+            #end of cycle
+            logging.info("Washes complete. Returning to Main Menu", extra={'weblog':True})
+    
+        #~~~~~~~~~~TEST MODE~~~~~~~~~~~~~~~
+        elif cycle_type in ('t','T'):    
+            print("nothing here yet!")
+            
+        else 
+            print("Invalid input, please enter a valid option")
 
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
+
+finally: 
     ticcmd('--deenergize')
 
 
