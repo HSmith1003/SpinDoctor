@@ -107,7 +107,7 @@ except Exception as e:
         
 try:
     
-    while true:
+    while True:
         
         cycle_type = input ("Welcome to SpinDoctor - Please enter 'W' for Wash Cycle, 'C' For Self Clean, or 'T' for test mode (SIPE only!)")
     
@@ -288,6 +288,7 @@ except KeyboardInterrupt:
 
 finally: 
     ticcmd('--deenergize')
+
 
 
 
