@@ -52,61 +52,61 @@ clean_num_fills = int((clean_vol/float((fill_stroke/1000))))
 print("Starting SpinDoctor. Press CTRL+C to exit at any time")
 print("Testing hardware, please wait")
 
+#Connect to the syringe pump
+logging.info('Connecting to the Multichannel Syringe Pump...', extra ={'weblog':True})
 try:
-    #Connect to the syringe pump
-    logging.info('Connecting to the Multichannel Syringe Pump...', extra ={'weblog':True})
-    try:
-        pump = SY01B(S_COM_PORT, baudrate=9600, position_count=6, syringe_volume_ul=5000)
-        logging.info('Connection Successful!', extra ={'weblog':True})
-        #report on the status of the pump once connected
-        #print(f"Address: {pump.get_address()}")
-        #print(f"Baud rate: {pump.get_rs232_baudrate()}")
-        #print(f"Firmware Version: {pump.get_firmware_version()}")
-        #initialize the pump to start
-        logging.info("Initializing Syringe...", extra={'weblog':True})
-        pump.move_valve_to_position(WASTE)
-        pump.reset_syringe_position()
-        logging.info('Syringe Pump is Ready', extra ={'weblog':True})
-        
-    except Exception as e:
-        logging.error("Could not connect to the Multichannel Syringe Pump: {}" .format(e), extra ={"weblog":True})
-        exit()
+    pump = SY01B(S_COM_PORT, baudrate=9600, position_count=6, syringe_volume_ul=5000)
+    logging.info('Connection Successful!', extra ={'weblog':True})
+    #report on the status of the pump once connected
+    #print(f"Address: {pump.get_address()}")
+    #print(f"Baud rate: {pump.get_rs232_baudrate()}")
+    #print(f"Firmware Version: {pump.get_firmware_version()}")
+    #initialize the pump to start
+    logging.info("Initializing Syringe...", extra={'weblog':True})
+    pump.move_valve_to_position(WASTE)
+    pump.reset_syringe_position()
+    logging.info('Syringe Pump is Ready', extra ={'weblog':True})
     
-    #Set up the subprocess to run ticcmd 
-    def ticcmd(*args):
-        return subprocess.check_output(['ticcmd'] + list(args))
-    #connect to the tic board using subprocess and get information on it's status
-    logging.info('Connecting to the Stepper Motor...', extra ={'weblog':True})
-    try:
-        status = yaml.safe_load(ticcmd('-s', '--full'))
-        ticname = status['Name']
-        serialnum = status ['Serial number']
-        firmware = status['Firmware version']
-        vin = status['VIN voltage']
-        energize = status['Energized']
-        logging.info('Connection Successful!', extra ={'weblog':True})
-        #print("Tic Board Name: {}".format(ticname))
-        #print("Serial Number: {}".format(serialnum))
-        #print("Firmware Version: {}".format(firmware))
-        #print("VIN Voltage: {}" .format(vin))
-        #print("Energized?: {}".format(energize))
-        #Test the motor by energizing it and moving it forward and backward
-        logging.info("Testing Motor...", extra ={'weblog':True})
-        ticcmd('--energize')
-        ticcmd('--exit-safe-start')                                                    
-        ticcmd('--velocity', str(400000) )
-        sleep(3)
-        ticcmd('--halt-and-hold')
-        ticcmd('--velocity', str(-400000))
-        sleep(3)
-        ticcmd('--halt-and-hold')
-        ticcmd('--deenergize')
-        logging.info("Motor is ready", extra ={'weblog':True})
-    except Exception as e:
-        logging.error("Could not connect to the Stepper Motor Controller - {}".format(e), extra ={"weblog":True})
-        exit()
+except Exception as e:
+    logging.error("Could not connect to the Multichannel Syringe Pump: {}" .format(e), extra ={"weblog":True})
+    exit()
+
+#Set up the subprocess to run ticcmd 
+def ticcmd(*args):
+    return subprocess.check_output(['ticcmd'] + list(args))
+#connect to the tic board using subprocess and get information on it's status
+logging.info('Connecting to the Stepper Motor...', extra ={'weblog':True})
+try:
+    status = yaml.safe_load(ticcmd('-s', '--full'))
+    ticname = status['Name']
+    serialnum = status ['Serial number']
+    firmware = status['Firmware version']
+    vin = status['VIN voltage']
+    energize = status['Energized']
+    logging.info('Connection Successful!', extra ={'weblog':True})
+    #print("Tic Board Name: {}".format(ticname))
+    #print("Serial Number: {}".format(serialnum))
+    #print("Firmware Version: {}".format(firmware))
+    #print("VIN Voltage: {}" .format(vin))
+    #print("Energized?: {}".format(energize))
+    #Test the motor by energizing it and moving it forward and backward
+    logging.info("Testing Motor...", extra ={'weblog':True})
+    ticcmd('--energize')
+    ticcmd('--exit-safe-start')                                                    
+    ticcmd('--velocity', str(400000) )
+    sleep(3)
+    ticcmd('--halt-and-hold')
+    ticcmd('--velocity', str(-400000))
+    sleep(3)
+    ticcmd('--halt-and-hold')
+    ticcmd('--deenergize')
+    logging.info("Motor is ready", extra ={'weblog':True})
+except Exception as e:
+    logging.error("Could not connect to the Stepper Motor Controller - {}".format(e), extra ={"weblog":True})
+    exit()
         
 try:
+    
     while true:
         
         cycle_type = input ("Welcome to SpinDoctor - Please enter 'W' for Wash Cycle, 'C' For Self Clean, or 'T' for test mode (SIPE only!)")
@@ -280,7 +280,7 @@ try:
         elif cycle_type in ('t','T'):    
             print("nothing here yet!")
             
-        else 
+        else: 
             print("Invalid input, please enter a valid option")
 
 except KeyboardInterrupt: 
@@ -288,6 +288,7 @@ except KeyboardInterrupt:
 
 finally: 
     ticcmd('--deenergize')
+
 
 
 
