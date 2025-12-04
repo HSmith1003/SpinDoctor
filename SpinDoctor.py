@@ -167,7 +167,7 @@ while true:
         #Run the wash for the alloted time and then stop the motor
         clean_seconds = clean_time * 60
         sleep(clean_seconds)
-        logging.info("Clean Soak Complete!"), extra={'weblog':True})
+        logging.info("Clean Soak Complete!", extra={'weblog':True})
 
         # ~~~~~~~~ DRAIN ~~~~~~~~
         ticcmd('--energize')
@@ -284,6 +284,7 @@ while true:
 except KeyboardInterrupt: 
     print("User Interrupt Recieved. Exiting...")
     ticcmd('--deenergize')
+
 
 
 
